@@ -1,43 +1,35 @@
 import React, { Component } from 'react';
-import { withAuth } from '@okta/okta-react';
+import { push } from 'react-router-redux';
+import { connect } from 'react-redux';
 
-export default withAuth(
-  class Home extends Component {
-    constructor(props) {
-      super(props);
-      this.state = { authenticated: null };
-      this.checkAuthentication = this.checkAuthentication.bind(this);
-      this.checkAuthentication();
-      this.login = this.login.bind(this);
-      this.logout = this.logout.bind(this);
-    }
+import OktaAuthButton from './OktaAuthButton';
 
-    async checkAuthentication() {
-      const authenticated = await this.props.auth.isAuthenticated();
-      if (authenticated !== this.state.authenticated) {
-        this.setState({ authenticated });
-      }
-    }
-
-    componentDidUpdate() {
-      this.checkAuthentication();
-    }
-
-    async login() {
-      this.props.auth.login('/');
-    }
-
-    async logout() {
-      this.props.auth.logout('/');
-    }
-
-    render() {
-      if (this.state.authenticated === null) return null;
-      return this.state.authenticated ? (
-        <button onClick={this.logout}>Logout</button>
-      ) : (
-        <button onClick={this.login}>Login</button>
-      );
-    }
+class Home extends Component {
+  constructor(props) {
+    super(props);
   }
-);
+
+  render() {
+    return (
+      <div>
+        <h1>Home</h1>
+        <OktaAuthButton />
+        <button onClick={this.props.go}>Test Location</button>
+      </div>
+    );
+  }
+}
+
+const mapStateToProps = state => {
+  return {
+    // todo: state.todos[0]
+  };
+};
+
+const mapDispatchToProps = dispatch => {
+  return {
+    go: () => dispatch(push('/protected'))
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Home);
